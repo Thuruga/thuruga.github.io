@@ -1,0 +1,380 @@
+:root {
+    --primary: #2c3e50;
+    --secondary: #3498db;
+}
+.hidden { opacity: 0; transition: opacity 0.3s; }
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #f5f6fa;
+}
+
+.auth-container, .quiz-container, .admin-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.tabs {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.tab {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: #eee;
+    cursor: pointer;
+}
+
+.tab.active {
+    background: var(--secondary);
+    color: white;
+}
+
+.auth-form {
+    display: none;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.auth-form.active {
+    display: flex;
+}
+
+input, select, button {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.question-card {
+    background: #f8f9fa;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.admin-tab {
+    display: none;
+}
+
+.admin-tab.active {
+    display: block;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: var(--primary);
+    color: white;
+}
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: flex;
+}
+
+.logout-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 8px 15px;
+    background: #e74c3c;
+  }
+  
+  .logout-btn:hover {
+    background: #c0392b;
+  }
+  .hidden {
+    display: none !important;
+  }
+  
+  .result-container {
+    margin-top: 2rem;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  .result-item {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border-left: 4px solid transparent;
+  }
+  
+  .result-item.correct {
+    border-color: #28a745;
+    background-color: #e8f5e9;
+  }
+  
+  .result-item.wrong {
+    border-color: #dc3545;
+    background-color: #f8d7da;
+  }
+  
+  .correct-answer {
+    color: #28a745;
+    font-weight: 500;
+  }
+  .score-container {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #e8f4ff;
+    border-radius: 10px;
+}
+
+.score-container h2 {
+    color: #2c3e50;
+    font-size: 1.8em;
+    margin: 0;
+}
+.progress {
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+  }
+  
+  .navigation {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  .navigation button {
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+  
+  .navigation button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+  }
+  
+  .navigation button:hover:not(:disabled) {
+    background: #0056b3;
+  }
+  /* Estilos Gerais */
+.admin-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+/* Formulário */
+.question-form {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.btn-save {
+    background: #27ae60;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Abas */
+.admin-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background: #ecf0f1;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.tab-btn.active {
+    background: #3498db;
+    color: white;
+}
+
+/* Conteúdo das Abas */
+.admin-tab-content {
+    display: none;
+}
+
+.admin-tab-content.active {
+    display: block;
+}
+
+/* Tabelas */
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+th {
+    background: #3498db;
+    color: white;
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+button[onclick*="edit"] {
+    background: #f1c40f;
+    color: white;
+    margin-right: 5px;
+}
+
+button[onclick*="delete"] {
+    background: #e74c3c;
+    color: white;
+}
+.admin-tab-content {
+    display: none;
+  }
+  
+  .admin-tab-content.active {
+    display: block;
+  }
+  
+  .tab-btn.active {
+    background: #3498db;
+    color: white;
+  }
+  .options-container {
+    display: grid;
+    gap: 15px;
+}
+
+.option {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.correct-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .table-container {
+        width: 100%;
+        overflow-x: scroll;
+    }
+    
+    table {
+        min-width: 600px;
+    }
+}

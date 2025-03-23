@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pagina Inicial</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/auth.js"></script>
+    <script type="module">
+        import { logout } from './js/auth.js';
+        window.logout = logout;
+      </script>
+</head>
+<header>
+<body>
+    <div class="auth-container">
+        <div class="tabs">
+            <button class="tab active" data-lab="login">Login</button>
+            <button class="tab" data-lab="register">Registro</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="auth-form active">
+            <input type="email" id="email" placeholder="Email" required>
+            <input type="password" id="password" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+
+        <!-- Registration Form -->
+        <form id="registerForm" class="auth-form">
+            <input type="text" id="regNome" placeholder="Nome" required>
+            <input type="email" id="regEmail" placeholder="Email" required>
+            <input type="password" id="regPassword" placeholder="Senha" required>
+            <select id="area">
+                <option value="mecanico">Mecânico</option>
+                <option value="eletronico">Eletrônico</option>
+            </select>
+            <select id="subarea">
+                <option value="BCM">BCM</option>
+                <option value="PH">PH</option>
+                <option value="ADULT">ADULT</option>
+                <option value="ABS">ABS</option>
+                <option value="WIPES">WIPES</option>
+                <option value="ENC">ENC</option>
+            </select>
+            <button type="submit">Registrar</button>
+        </form>
+    </div>
+</body>
+</html>

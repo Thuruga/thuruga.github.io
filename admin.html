@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <script type="module" src="js/admin.js"></script> 
+</head>
+<body>
+    <div class="admin-container">
+        <header>
+            <h1>Painel Administrativo</h1>
+            <button onclick="window.logout()" class="logout-btn">Sair</button>
+        </header>
+
+        <!-- Formulário de Perguntas -->
+        <section class="question-form">
+            <h2>Gerenciar Perguntas</h2>
+            <form id="questionForm">
+                <input type="hidden" id="questionId">
+                <div class="form-group">
+                    <label for="questionText">Pergunta:</label>
+                    <textarea id="questionText" required></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="questionArea">Área:</label>
+                        <select id="questionArea" required>
+                            <option value="mecanico">Mecânico</option>
+                            <option value="eletronico">Eletrônico</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="questionSubarea">Subárea:</label>
+                        <select id="questionSubarea" required>
+                            <option value="geralMec">Geral Mecânica</option>
+                            <option value="geralElet">Geral Eletrônica</option>
+                            <option value="BCM">BCM</option>
+                            <option value="PH">PH</option>
+                            <option value="ADULT">ADULT</option>
+                            <option value="ABS">ABS</option>
+                            <option value="WIPES">WIPES</option>
+                            <option value="ENC">ENC</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="options-container">
+                    <div class="option">
+                        <input type="text" id="optionA" placeholder="Opção A" required>
+                        <label class="correct-label">
+                            <input type="radio" name="correctOption" value="0" required>
+                            Correta
+                        </label>
+                    </div>
+                    <div class="option">
+                        <input type="text" id="optionB" placeholder="Opção B" required>
+                        <label class="correct-label">
+                            <input type="radio" name="correctOption" value="1">
+                            Correta
+                        </label>
+                    </div>
+                    <div class="option">
+                        <input type="text" id="optionC" placeholder="Opção C" required>
+                        <label class="correct-label">
+                            <input type="radio" name="correctOption" value="2">
+                            Correta
+                        </label>
+                    </div>
+                    <div class="option">
+                        <input type="text" id="optionD" placeholder="Opção D" required>
+                        <label class="correct-label">
+                            <input type="radio" name="correctOption" value="3">
+                            Correta
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-save">Salvar Pergunta</button>
+            </form>
+        </section>
+
+        <!-- Navegação entre abas -->
+        <nav class="admin-tabs">
+            <button class="tab-btn active" onclick="window.showTab('questions')">Perguntas</button>
+            <button class="tab-btn" onclick="window.showTab('users')">Usuários</button>
+            <button class="tab-btn" onclick="window.showTab('results')">Resultados</button>
+        </nav>
+
+        <!-- Conteúdo das Abas -->
+        <section id="questionsTab" class="admin-tab-content active">
+            <h2>Lista de Perguntas</h2>
+            <div class="filters">
+                <select id="filterArea">
+                  <option value="">Todas as Áreas</option>
+                  <option value="mecanico">Mecânico</option>
+                  <option value="eletronico">Eletrônico</option>
+                </select>
+                
+                <select id="filterSubarea">
+                  <option value="">Todas as Subáreas</option>
+                    <option value="geralMec">Geral Mecânica</option>
+                    <option value="geralElet">Geral Eletrônica</option>
+                    <option value="BCM">BCM</option>
+                    <option value="PH">PH</option>
+                    <option value="ADULT">ADULT</option>
+                    <option value="ABS">ABS</option>
+                    <option value="WIPES">WIPES</option>
+                    <option value="ENC">ENC</option>
+                </select>
+                
+                <button onclick="applyFilters()">Filtrar</button>
+              </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Pergunta</th>
+                            <th>Área</th>
+                            <th>Subárea</th>
+                            <th>Opções</th>
+                            <th>Resposta Correta</th>
+                        </tr>
+                    </thead>
+                    <tbody id="questionsBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="usersTab" class="admin-tab-content">
+            <h2>Usuários Registrados</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Área</th>
+                            <th>Subárea</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="resultsTab" class="admin-tab-content">
+            <h2>Resultados dos Usuários</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Data</th>
+                            <th>Pontuação</th>
+                            <th>Detalhes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script type="module">
+        import { logout } from './js/auth.js';
+        window.logout = logout;
+      </script>
+</body>
+</html>
