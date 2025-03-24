@@ -37,38 +37,53 @@ function setupForms() {
     }
   });
 
-  // Registro (CORREÇÃO PRINCIPAL)
   document.getElementById('registerForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const nome = document.getElementById('regNome').value; // ID corrigido
-    const email = document.getElementById('regEmail').value;
-    const password = document.getElementById('regPassword').value;
-    const area = document.getElementById('area').value;
-    const subarea = document.getElementById('subarea').value;
+  e.preventDefault();
+  
+  // Obter elementos do DOM
+  const nomeInput = document.getElementById('regNome');
+  const emailInput = document.getElementById('regEmail');
+  const passwordInput = document.getElementById('regPassword');
+  const areaInput = document.getElementById('area');
+  const subareaInput = document.getElementById('subarea');
 
-
-  if (!nome || !email || !password || !area || !subarea) {
-    alert("Erro: Campos do formulário não encontrados!");
+  // Verificar se elementos existem
+  if (!nomeInput || !emailInput || !passwordInput || !areaInput || !subareaInput) {
+    alert("Erro: Campos não encontrados!");
     return;
   }
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      
-      await setDoc(doc(db, "users", userCredential.user.uid), {
-        nome: nome.value.trim(), // Usando variável corrigida
-        email: email.value.trim(),
-        area: area.value,
-        subarea: subarea.value.toUpperCase().replace(" ", "_"),
-        role: 'user',
-        createdAt: new Date()
-      });
 
-      alert('Registro realizado! Faça login.');
-      switchTab('login');
-    } catch (error) {
-      alert("Erro no registro: " + error.message);
-    }
-  });
+  // Obter valores
+  const nome = nomeInput.value.trim();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+  const area = areaInput.value;
+  const subarea = subareaInput.value.toUpperCase().replace(" ", "_");
+
+  // Verificar campos vazios
+  if (!nome || !email || !password || !area || !subarea) {
+    alert("Preencha todos os campos!");
+    return;
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    
+    await setDoc(doc(db, "users", userCredential.user.uid), {
+      nome: nome, // Já foi feito .trim()
+      email: email,
+      area: area,
+      subarea: subarea,
+      role: 'user',
+      createdAt: new Date()
+    });
+
+    alert('Registro realizado! Faça login.');
+    switchTab('login');
+  } catch (error) {
+    alert("Erro no registro: " + error.message);
+  }
+});
 }
 
 // ========== GERENCIAMENTO DE ABAS ==========
