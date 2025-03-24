@@ -31,16 +31,16 @@ function setupForms() {
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      await checkUserRole(userCredential.user.uid); // Verifica o papel do usuário
+      await checkUserRole(userCredential.user.uid);
     } catch (error) {
       alert("Erro no login: " + error.message);
     }
   });
 
-  // Registro
+  // Registro (CORREÇÃO PRINCIPAL)
   document.getElementById('registerForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const nome = document.getElementById('regNome').value;
+    const nome = document.getElementById('regNome').value; // ID corrigido
     const email = document.getElementById('regEmail').value;
     const password = document.getElementById('regPassword').value;
     const area = document.getElementById('area').value;
@@ -49,18 +49,17 @@ function setupForms() {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
-      // Salva dados adicionais no Firestore
       await setDoc(doc(db, "users", userCredential.user.uid), {
-        nome: document.getElementById('nome').value.trim(),        
+        nome: nome.trim(), // Usando variável corrigida
         email: email,
         area: area,
-        subarea: subarea,
+        subarea: subarea.toUpperCase().replace(" ", "_"),
         role: 'user',
         createdAt: new Date()
       });
 
       alert('Registro realizado! Faça login.');
-      switchTab('login'); // Volta para a aba de login
+      switchTab('login');
     } catch (error) {
       alert("Erro no registro: " + error.message);
     }
@@ -78,12 +77,9 @@ function setupTabs() {
 }
 
 function switchTab(tab) {
-  
-  // Esconde todas as abas e remove a classe 'active'
   document.querySelectorAll('.auth-form').forEach(form => form.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   
-  // Ativa a aba selecionada
   if (tab === 'login') {
     document.getElementById('loginForm').classList.add('active');
     document.querySelector('.tab:first-child').classList.add('active');
@@ -93,31 +89,30 @@ function switchTab(tab) {
   }
 }
 
-// ========== VERIFICAÇÃO DE PAPEL (ADMIN/USER) ==========
+// ========== VERIFICAÇÃO DE PAPEL ==========
 async function checkUserRole(uid) {
   try {
     const userDoc = await getDoc(doc(db, "users", uid));
     
     if (!userDoc.exists()) {
       await auth.signOut();
-      throw new Error("Usuário não registrado no sistema!");
+      throw new Error("Usuário não registrado!");
     }
 
     const userData = userDoc.data();
     const targetPage = userData.role === 'admin' ? 'admin.html' : 'quiz.html';
-    window.location.href = targetPage; // Redireciona conforme o papel
+    window.location.href = targetPage;
 
   } catch (error) {
     alert(error.message);
-    window.location.href = 'index.html'; // Força logout em caso de erro
+    window.location.href = 'index.html';
   }
 }
 
 // ========== MONITORAMENTO DE AUTENTICAÇÃO ==========
 function checkAuthState() {
   onAuthStateChanged(auth, (user) => {
-    // Redireciona para o login se não estiver autenticado
-    if (!user && !window.location.href.includes('index.html')) {
+    if (!user && !window.location.pathname.endsWith('index.html')) {
       window.location.href = 'index.html';
     }
   });
