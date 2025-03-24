@@ -46,14 +46,19 @@ function setupForms() {
     const area = document.getElementById('area').value;
     const subarea = document.getElementById('subarea').value;
 
+
+  if (!nome || !email || !password || !area || !subarea) {
+    alert("Erro: Campos do formulário não encontrados!");
+    return;
+  }
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
       await setDoc(doc(db, "users", userCredential.user.uid), {
-        nome: nome.trim(), // Usando variável corrigida
-        email: email,
-        area: area,
-        subarea: subarea.toUpperCase().replace(" ", "_"),
+        nome: nome.value.trim(), // Usando variável corrigida
+        email: email.value.trim(),
+        area: area.value,
+        subarea: subarea.value.toUpperCase().replace(" ", "_"),
         role: 'user',
         createdAt: new Date()
       });
