@@ -22,17 +22,18 @@ window.renderQuestions = () => {
   const q = questions[currentQuestionIndex];
   
   const questionHTML = `
-    <div class="question-card">
-      <div class="progress">Questão ${currentQuestionIndex + 1} de ${questions.length}</div>
-      <h3>${q.text}</h3>
+       <div class="question-card">
+      <h3>Pergunta ${currentQuestionIndex + 1}: ${q.text}</h3>
+      
+      ${q.imagemBase64 ? `
+        <div class="question-image">
+          <img src="${q.imagemBase64}" alt="Imagem da pergunta">
+        </div>
+      ` : ''}
+
       ${q.options.map((opt, i) => `
         <label>
-          <input 
-            type="radio" 
-            name="${q.id}" 
-            value="${i}"
-            ${userAnswers[q.id] === i ? 'checked' : ''}
-          >
+          <input type="radio" name="${q.id}" value="${i}">
           ${String.fromCharCode(65 + i)}) ${opt}
         </label><br>
       `).join('')}
