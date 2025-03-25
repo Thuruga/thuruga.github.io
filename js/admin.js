@@ -10,7 +10,7 @@ import {
   deleteDoc,
   addDoc,
   onAuthStateChanged,
-  where
+  where,
 } from './firebase-config.js';
 
 const AreaName = {
@@ -65,6 +65,9 @@ window.editQuestion = async (questionId) => {
     
     if (docSnap.exists()) {
       const question = docSnap.data();
+      currentImageBase64 = question.imagemBase64 || '';
+      
+      // Preencher campos
       document.getElementById('questionId').value = questionId;
       document.getElementById('questionText').value = question.text;
       document.getElementById('questionArea').value = question.area;
@@ -74,11 +77,37 @@ window.editQuestion = async (questionId) => {
       document.getElementById('optionC').value = question.options[2];
       document.getElementById('optionD').value = question.options[3];
       document.querySelector(`input[name="correctOption"][value="${question.correctIndex}"]`).checked = true;
+
+      // Exibir imagem existente
+      const preview = document.getElementById('imagePreview');
+      preview.innerHTML = currentImageBase64 ? 
+        `<img src="${currentImageUrl}" class="preview-image">` : 
+        '';
     }
   } catch (error) {
     alert("Erro ao editar: " + error.message);
   }
 };
+
+// ===================== IMAGEM NA PERGUNTA =====================
+let currentImageBase64 = '';
+
+document.getElementById('questionImage').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  const preview = document.getElementById('imagePreview');
+  preview.innerHTML = '';
+
+  if (file) {
+    const reader = new FileReader();
+    
+    reader.onload = (event) => {
+      currentImageBase64 = event.target.result; // Armazena Base64
+      preview.innerHTML = `<img src="${currentImageBase64}" class="preview-image">`;
+    };
+    
+    reader.readAsDataURL(file);
+  }
+});
 
 window.deleteQuestion = async (questionId) => {
   if (confirm("Tem certeza que deseja excluir esta pergunta?")) {
@@ -129,6 +158,11 @@ async function loadQuestions(areaFilter = '', subareaFilter = '') {
             `).join('<br>')}
           </td>
           <td>${String.fromCharCode(65 + question.correctIndex)}</td>
+          <td>
+            ${question.imagemBase64 ? 
+              `<img src="${question.imagenBase64}" class="thumbnail">` : 
+              ''}
+          </td>
           <td>
             <button onclick="editQuestion('${doc.id}')">✏️</button>
             <button onclick="deleteQuestion('${doc.id}')">🗑️</button>
@@ -239,22 +273,23 @@ function setupQuestionForm() {
         alert("Selecione a opção correta!");
         return;
       }
-      const correctIndex = parseInt(correctOption.value);
-
+  
+      // Criar objeto de dados
       const questionData = {
         text: document.getElementById('questionText').value.trim(),
         area: document.getElementById('questionArea').value,
         subarea: document.getElementById('questionSubarea').value,
         options,
-        correctIndex
+        correctIndex: parseInt(correctOption.value),
+        imagemBase64: currentImageBase64 || null // Adiciona Base64
       };
-
+  
       // Validação
       if (options.some(opt => opt === "")) {
         alert("Preencha todas as opções!");
         return;
       }
-
+  
       // Salvar/Atualizar
       const questionId = document.getElementById('questionId').value;
       if (questionId) {
@@ -262,12 +297,16 @@ function setupQuestionForm() {
       } else {
         await addDoc(collection(db, "questions"), questionData);
       }
-
-      // Recarregar e limpar
-      await loadQuestions();
+  
+      // Resetar formulário
       e.target.reset();
       document.getElementById('questionId').value = '';
-
+      document.getElementById('imagePreview').innerHTML = '';
+      currentImageBase64 = '';
+      document.getElementById('questionImage').value = '';
+  
+      await loadQuestions();
+  
     } catch (error) {
       alert("Erro ao salvar: " + error.message);
     }
