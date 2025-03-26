@@ -160,7 +160,7 @@ async function loadQuestions(areaFilter = '', subareaFilter = '') {
           <td>${String.fromCharCode(65 + question.correctIndex)}</td>
           <td>
             ${question.imagemBase64 ? 
-              `<img src="${question.imagenBase64}" class="thumbnail">` : 
+              `<img src="${question.imagemBase64}" class="thumbnail">` : 
               ''}
           </td>
           <td>
