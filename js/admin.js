@@ -1,10 +1,12 @@
+import { initializeReports } from './reports.js';
 import { 
   auth, 
   db,
-  doc,
-  query,
-  getDoc,
+  doc, // Certifique-se que está importado
+  getDoc, // Importe esta função
   collection,
+  query,
+  where,
   getDocs,
   updateDoc,
   deleteDoc,
@@ -28,10 +30,68 @@ const SubareaName = {
   WIPES: 'WIPES',
   ENC: 'ENC'
 };
+
+// Configurar event listeners para as abas
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.tab-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const tabId = button.dataset.tab;
+      window.showTab(tabId);
+    });
+  });
+});
+
+// Versão corrigida da função showTab
+window.showTab = (tabId) => {
+  try {
+    // Elementos
+    const questionForm = document.querySelector('.question-form');
+    const tabs = document.querySelectorAll('.admin-tab-content');
+    const buttons = document.querySelectorAll('.tab-btn');
+
+    // Resetar estado
+    tabs.forEach(tab => tab.classList.remove('active'));
+    buttons.forEach(btn => btn.classList.remove('active'));
+    questionForm.style.display = 'block';
+
+    // Esconder formulário se não for a aba de perguntas
+    if (tabId !== 'questions') {
+      questionForm.style.display = 'none';
+    }
+
+    // Ativar elementos da aba selecionada
+    const activeTab = document.getElementById(`${tabId}Tab`);
+    const activeButton = document.querySelector(`[data-tab="${tabId}"]`);
+
+    if (!activeTab || !activeButton) {
+      throw new Error(`Elementos da aba ${tabId} não encontrados`);
+    }
+
+    activeTab.classList.add('active');
+    activeButton.classList.add('active');
+
+  } catch (error) {
+    console.error("Erro na navegação:", error);
+    alert("Erro ao mudar de aba. Recarregue a página.");
+  }
+};
 // ===================== FUNÇÕES GLOBAIS =====================
 window.showTab = (tabId) => {
   try {
-    // Remover classes ativas
+    // Elementos da interface
+    const questionFormSection = document.querySelector('.question-form');
+    const tabsContainer = document.querySelector('.admin-tabs');
+
+    // Esconder formulário de perguntas se não for a aba principal
+    if (tabId !== 'questions') {
+      questionFormSection.classList.add('hidden');
+      tabsContainer.classList.add('other-tab-active');
+    } else {
+      questionFormSection.classList.remove('hidden');
+      tabsContainer.classList.remove('other-tab-active');
+    }
+
+    // Remover classes ativas de todas as abas
     document.querySelectorAll('.admin-tab-content').forEach(tab => 
       tab.classList.remove('active')
     );
@@ -39,17 +99,14 @@ window.showTab = (tabId) => {
       btn.classList.remove('active')
     );
 
-    // Encontrar elementos (flexível com aspas)
+    // Ativar elementos da aba selecionada
     const tabElement = document.getElementById(`${tabId}Tab`);
-    const buttonElement = document.querySelector(
-      `button[onclick*='${tabId}']` // Usa *= para conter o texto
-    );
+    const buttonElement = document.querySelector(`button[data-tab="${tabId}"]`);
 
     if (!tabElement || !buttonElement) {
       throw new Error(`Elementos da aba ${tabId} não encontrados!`);
     }
 
-    // Ativar elementos
     tabElement.classList.add('active');
     buttonElement.classList.add('active');
 
@@ -149,7 +206,13 @@ async function loadQuestions(areaFilter = '', subareaFilter = '') {
       const question = doc.data();
       tbody.innerHTML += `
         <tr>
-          <td>${question.text}</td>
+          <td>${question.text}
+            ${question.imagemBase64 ? 
+              `<div class="image-container">
+                <button onclick="viewImage('${doc.id}')">Imagem da questão</button>
+              </div>
+              `:''}
+              </td>
           <td>${AreaName[question.area] || question.area}</td>
           <td>${SubareaName[question.subarea] || question.subarea}</td>
           <td>
@@ -176,6 +239,46 @@ async function loadQuestions(areaFilter = '', subareaFilter = '') {
   }
 }
 
+const imageCache = {};
+
+async function fetchQuestionImage(questionId) {
+  try{
+    if(imageCache[questionId]) return imageCache[questionId];
+    const questionRef = doc(db,'questions',questionId);
+    const questionDoc = await getDoc(questionRef);
+    
+    if(!questionDoc.exists()){
+      throw new Error("Imagem não encontrada",error);
+    }
+    imageCache[questionId] = questionDoc.data().imagemBase64;
+    return imageCache[questionId];
+  } catch {
+    console.log("Erro na busca da imagem",error)
+    throw error;
+  }
+}
+
+
+  window.viewImage = async (questionId) => {
+  try {
+    const imageUrl = await fetchQuestionImage(questionId);
+    
+    const modal = document.createElement('div');
+    modal.className = 'image-modal';
+    modal.innerHTML = `
+      <div class="image-modal-content">
+        <img src="${imageUrl}" alt="Imagem completa da pergunta">
+        <button onclick="this.parentElement.parentElement.remove()" class="close-btn">
+          ×
+        </button>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+  } catch (error) {
+    alert("Erro ao carregar imagem: " + error.message);
+  }
+};
 // ===================== GERENCIAMENTO DE USUÁRIOS =====================
 window.deleteUser = async (userId) => {
   if (confirm("Tem certeza que deseja excluir este usuário?")) {
@@ -220,10 +323,70 @@ window.viewDetails = async (resultId) => {
   try {
     const docSnap = await getDoc(doc(db, "results", resultId));
     const result = docSnap.data();
+
+    // Criar elementos
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
     
-    alert(`Detalhes do resultado:
-      \nAcertos: ${result.score}/10
-      \nRespostas: ${JSON.stringify(result.answers, null, 2)}`);
+    const modal = document.createElement('div');
+    modal.className = 'result-modal';
+
+    // Conteúdo do modal
+    let content = `<h2>Detalhes do Resultado</h2>`;
+    
+    // Seção de estatísticas
+    content += `
+      <div class="stats">
+        <p><strong>Usuário:</strong> ${result.nome}</p>
+        <p><strong>Pontuação:</strong> ${result.score}/10</p>
+        <p><strong>Data:</strong> ${new Date(result.timestamp?.toDate()).toLocaleString()}</p>
+      </div>
+    `;
+
+    // Detalhes das respostas
+    content += `<h3>Respostas:</h3><ul>`;
+
+    for (const [questionId, answerIndex] of Object.entries(result.answers)) {
+      const questionDoc = await getDoc(doc(db, "questions", questionId));
+      const question = questionDoc.data();
+      
+      content += `
+        <li>
+          <p><strong>Pergunta:</strong> ${question?.text || 'Pergunta não encontrada'}</p>
+          ${question?.imagemBase64 ? `<img src="${question.imagemBase64}" alt="Imagem da pergunta">` : ''}
+          <p><strong>Sua resposta:</strong> ${question?.options?.[answerIndex] || 'Resposta inválida'}</p>
+          <p><strong>Resposta correta:</strong> ${question?.options?.[question.correctIndex]}</p>
+        </li>
+      `;
+    }
+
+    content += `</ul>`;
+
+    // Botão de fechar
+    content += `
+      <button class="modal-close-btn">
+        Fechar
+      </button>
+    `;
+
+    modal.innerHTML = content;
+    
+    // Adicionar ao DOM
+    document.body.appendChild(overlay);
+    document.body.appendChild(modal);
+
+    // Event listeners
+    const closeBtn = modal.querySelector('.modal-close-btn');
+    closeBtn.onclick = () => {
+      modal.remove();
+      overlay.remove();
+    };
+
+    overlay.onclick = () => {
+      modal.remove();
+      overlay.remove();
+    };
+
   } catch (error) {
     alert("Erro ao visualizar: " + error.message);
   }
@@ -241,6 +404,8 @@ async function loadResults() {
         <tr>
           <td>${result.nome}</td>
           <td>${result.email}</td>
+          <td>${result.area}</td>
+          <td>${result.subarea}</td>
           <td>${new Date(result.timestamp?.toDate()).toLocaleString()}</td>
           <td>${result.score}/10</td>
           <td>
@@ -342,5 +507,6 @@ document.addEventListener('DOMContentLoaded', () => {
       console.error("Erro no painel admin:", error);
       window.location.href = 'index.html';
     }
+    await initializeReports();
   });
 });

@@ -83,7 +83,7 @@ window.saveAnswer = () => {
   const q = questions[currentQuestionIndex];
   const selected = document.querySelector(`input[name="${q.id}"]:checked`);
   if (selected) {
-    userAnswers[q.id] = parseInt(selected.value);
+    userAnswers[q.id] = parseInt(selected.value); // ID da pergunta como chave
   }
 };
 
@@ -176,10 +176,14 @@ window.submitQuiz = async () => {
     // Salvar no Firestore (APENAS UMA VEZ)
     await addDoc(collection(db, "results"), {
       nome: userData.nome, // Usar dados do Firestore
+      area: userData.area,
+      subarea: userData.subarea,
       userId: auth.currentUser.uid,
+      answers: userAnswers,
       email: auth.currentUser.email,
       score: correctCount,
-      timestamp: new Date()
+      timestamp: new Date(),
+
     });
 
   } catch (error) {
