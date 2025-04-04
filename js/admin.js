@@ -2,8 +2,8 @@ import { initializeReports } from './reports.js';
 import { 
   auth, 
   db,
-  doc, // Certifique-se que está importado
-  getDoc, // Importe esta função
+  doc,
+  getDoc, 
   collection,
   query,
   where,
@@ -12,7 +12,6 @@ import {
   deleteDoc,
   addDoc,
   onAuthStateChanged,
-  where,
 } from './firebase-config.js';
 
 const AreaName = {
