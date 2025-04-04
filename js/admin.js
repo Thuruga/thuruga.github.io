@@ -41,79 +41,29 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Versão corrigida da função showTab
-window.showTab = (tabId) => {
-  try {
-    // Elementos
-    const questionForm = document.querySelector('.question-form');
-    const tabs = document.querySelectorAll('.admin-tab-content');
-    const buttons = document.querySelectorAll('.tab-btn');
-
-    // Resetar estado
-    tabs.forEach(tab => tab.classList.remove('active'));
-    buttons.forEach(btn => btn.classList.remove('active'));
-    questionForm.style.display = 'block';
-
-    // Esconder formulário se não for a aba de perguntas
-    if (tabId !== 'questions') {
-      questionForm.style.display = 'none';
-    }
-
-    // Ativar elementos da aba selecionada
-    const activeTab = document.getElementById(`${tabId}Tab`);
-    const activeButton = document.querySelector(`[data-tab="${tabId}"]`);
-
-    if (!activeTab || !activeButton) {
-      throw new Error(`Elementos da aba ${tabId} não encontrados`);
-    }
-
-    activeTab.classList.add('active');
-    activeButton.classList.add('active');
-
-  } catch (error) {
-    console.error("Erro na navegação:", error);
-    alert("Erro ao mudar de aba. Recarregue a página.");
-  }
-};
 // ===================== FUNÇÕES GLOBAIS =====================
 window.showTab = (tabId) => {
-  try {
-    // Elementos da interface
-    const questionFormSection = document.querySelector('.question-form');
-    const tabsContainer = document.querySelector('.admin-tabs');
+  const questionFormSection = document.querySelector('.question-form');
+  const tabsContainer = document.querySelector('.admin-tabs');
+  
+  questionFormSection.style.display = tabId === 'questions' ? 'block' : 'none';
+  tabsContainer.classList.toggle('other-tab-active', tabId !== 'questions');
 
-    // Esconder formulário de perguntas se não for a aba principal
-    if (tabId !== 'questions') {
-      questionFormSection.classList.add('hidden');
-      tabsContainer.classList.add('other-tab-active');
-    } else {
-      questionFormSection.classList.remove('hidden');
-      tabsContainer.classList.remove('other-tab-active');
-    }
-
-    // Remover classes ativas de todas as abas
-    document.querySelectorAll('.admin-tab-content').forEach(tab => 
+  document.querySelectorAll('.admin-tab-content').forEach(tab => 
       tab.classList.remove('active')
-    );
-    document.querySelectorAll('.tab-btn').forEach(btn => 
+  );
+  document.querySelectorAll('.tab-btn').forEach(btn => 
       btn.classList.remove('active')
-    );
+  );
 
-    // Ativar elementos da aba selecionada
-    const tabElement = document.getElementById(`${tabId}Tab`);
-    const buttonElement = document.querySelector(`button[data-tab="${tabId}"]`);
+  const tabElement = document.getElementById(`${tabId}Tab`);
+  const buttonElement = document.querySelector(`button[data-tab="${tabId}"]`);
 
-    if (!tabElement || !buttonElement) {
-      throw new Error(`Elementos da aba ${tabId} não encontrados!`);
-    }
-
-    tabElement.classList.add('active');
-    buttonElement.classList.add('active');
-
-  } catch (error) {
-    console.error("Erro ao mudar aba:", error);
+  if(tabElement && buttonElement) {
+      tabElement.classList.add('active');
+      buttonElement.classList.add('active');
   }
 };
-
 // ===================== GERENCIAMENTO DE PERGUNTAS =====================
 window.editQuestion = async (questionId) => {
   try {
@@ -137,8 +87,7 @@ window.editQuestion = async (questionId) => {
       // Exibir imagem existente
       const preview = document.getElementById('imagePreview');
       preview.innerHTML = currentImageBase64 ? 
-        `<img src="${currentImageUrl}" class="preview-image">` : 
-        '';
+      `<img src="${currentImageBase64}" class="preview-image">` : '';
     }
   } catch (error) {
     alert("Erro ao editar: " + error.message);
@@ -221,11 +170,6 @@ async function loadQuestions(areaFilter = '', subareaFilter = '') {
           </td>
           <td>${String.fromCharCode(65 + question.correctIndex)}</td>
           <td>
-            ${question.imagemBase64 ? 
-              `<img src="${question.imagemBase64}" class="thumbnail">` : 
-              ''}
-          </td>
-          <td>
             <button onclick="editQuestion('${doc.id}')">✏️</button>
             <button onclick="deleteQuestion('${doc.id}')">🗑️</button>
           </td>
@@ -241,41 +185,46 @@ async function loadQuestions(areaFilter = '', subareaFilter = '') {
 const imageCache = {};
 
 async function fetchQuestionImage(questionId) {
-  try{
-    if(imageCache[questionId]) return imageCache[questionId];
-    const questionRef = doc(db,'questions',questionId);
-    const questionDoc = await getDoc(questionRef);
-    
-    if(!questionDoc.exists()){
-      throw new Error("Imagem não encontrada",error);
+  try {
+    if (!imageCache[questionId]) {
+      const questionDoc = await getDoc(doc(db, "questions", questionId));
+      imageCache[questionId] = questionDoc.data().imagemBase64;
     }
-    imageCache[questionId] = questionDoc.data().imagemBase64;
     return imageCache[questionId];
-  } catch {
-    console.log("Erro na busca da imagem",error)
-    throw error;
+  } catch (error) {
+    console.error("Erro ao buscar imagem:", error);
+    return null;
   }
 }
 
 
-  window.viewImage = async (questionId) => {
+window.viewImage = async (questionId) => {
   try {
-    const imageUrl = await fetchQuestionImage(questionId);
-    
-    const modal = document.createElement('div');
-    modal.className = 'image-modal';
-    modal.innerHTML = `
-      <div class="image-modal-content">
-        <img src="${imageUrl}" alt="Imagem completa da pergunta">
-        <button onclick="this.parentElement.parentElement.remove()" class="close-btn">
-          ×
-        </button>
-      </div>
-    `;
-    
-    document.body.appendChild(modal);
+      const imageUrl = await fetchQuestionImage(questionId);
+      
+      if (!imageUrl) {
+          alert("Esta pergunta não possui imagem");
+          return;
+      }
+
+      // Criar modal seguro
+      const modal = document.createElement('div');
+      modal.className = 'image-modal';
+      modal.innerHTML = `
+          <div class="image-modal-content">
+              <img src="${imageUrl}" alt="Imagem da pergunta">
+              <button class="close-btn">×</button>
+          </div>
+      `;
+
+      // Adicionar eventos
+      modal.querySelector('.close-btn').onclick = () => modal.remove();
+      modal.onclick = (e) => e.target === modal && modal.remove();
+
+      document.body.appendChild(modal);
+
   } catch (error) {
-    alert("Erro ao carregar imagem: " + error.message);
+      alert(`Erro: ${error.message}`);
   }
 };
 // ===================== GERENCIAMENTO DE USUÁRIOS =====================
