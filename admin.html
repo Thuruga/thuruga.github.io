@@ -6,9 +6,8 @@
     <title>Painel Administrativo</title>
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module" src="js/firebase-config.js"></script>
-    <script type="module" src="js/admin.js"></script>
-    <script type="module" src="js/reports.js"></script></head>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+</head>
 <body>
     <div class="admin-container">
         <header>
@@ -16,87 +15,13 @@
             <button onclick="window.logout()" class="logout-btn">Sair</button>
         </header>
 
-        <!-- Formulário de Perguntas -->
-        <section class="question-form">
-            <h2>Gerenciar Perguntas</h2>
-            <form id="questionForm">
-                <input type="hidden" id="questionId">
-                <div class="form-group">
-                    <label for="questionText">Pergunta:</label>
-                    <textarea id="questionText" required></textarea>
-                    <div class="form-group">
-                        <label for="questionImage">Imagem da Pergunta (opcional):</label>
-                        <input type="file" id="questionImage" accept="image/png, image/jpeg">
-                        <div id="imagePreview" class="image-preview"></div>
-                      </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="questionArea">Área:</label>
-                        <select id="questionArea" required>
-                            <option value="mecanico">Mecânico</option>
-                            <option value="eletronico">Eletrônico</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="questionSubarea">Subárea:</label>
-                        <select id="questionSubarea" required>
-                            <option value="geralMec">Geral Mecânica</option>
-                            <option value="geralElet">Geral Eletrônica</option>
-                            <option value="BCM">BCM</option>
-                            <option value="PH">PH</option>
-                            <option value="ADULT">ADULT</option>
-                            <option value="ABS">ABS</option>
-                            <option value="WIPES">WIPES</option>
-                            <option value="ENC">ENC</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="options-container">
-                    <div class="option">
-                        <input type="text" id="optionA" placeholder="Opção A" required>
-                        <label class="correct-label">
-                            <input type="radio" name="correctOption" value="0" required>
-                            Correta
-                        </label>
-                    </div>
-                    <div class="option">
-                        <input type="text" id="optionB" placeholder="Opção B" required>
-                        <label class="correct-label">
-                            <input type="radio" name="correctOption" value="1">
-                            Correta
-                        </label>
-                    </div>
-                    <div class="option">
-                        <input type="text" id="optionC" placeholder="Opção C" required>
-                        <label class="correct-label">
-                            <input type="radio" name="correctOption" value="2">
-                            Correta
-                        </label>
-                    </div>
-                    <div class="option">
-                        <input type="text" id="optionD" placeholder="Opção D" required>
-                        <label class="correct-label">
-                            <input type="radio" name="correctOption" value="3">
-                            Correta
-                        </label>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-save">Salvar Pergunta</button>
-            </form>
-        </section>
-
-        <!-- Navegação entre abas -->
         <nav class="admin-tabs">
             <button class="tab-btn active" data-tab="questions">Perguntas</button>
             <button class="tab-btn" data-tab="users">Usuários</button>
             <button class="tab-btn" data-tab="results">Resultados</button>
             <button class="tab-btn" data-tab="reports">Relatórios</button>
-          </nav>
+        </nav>
+
 
         <section id="reportsTab" class="admin-tab-content">
             <h2>Relatórios Analíticos</h2>
@@ -129,6 +54,9 @@
               </div>
             </div>
           </section>
+
+
+
 
         <!-- Conteúdo das Abas -->
         <section id="questionsTab" class="admin-tab-content active">
@@ -209,80 +137,85 @@
             </div>
         </section>
     </div>
-    <section class="question-form">
-        <h2>Gerenciar Perguntas</h2>
-        <form id="questionForm">
-            <input type="hidden" id="questionId">
-            <div class="form-group">
-                <label for="questionText">Pergunta:</label>
-                <textarea id="questionText" required></textarea>
+    
+        <!-- Formulário de Perguntas -->
+        <section class="question-form">
+            <h2>Gerenciar Perguntas</h2>
+            <form id="questionForm">
+                <input type="hidden" id="questionId">
                 <div class="form-group">
-                    <label for="questionImage">Imagem da Pergunta (opcional):</label>
-                    <input type="file" id="questionImage" accept="image/png, image/jpeg">
-                    <div id="imagePreview" class="image-preview"></div>
-                  </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="questionArea">Área:</label>
-                    <select id="questionArea" required>
-                        <option value="mecanico">Mecânico</option>
-                        <option value="eletronico">Eletrônico</option>
-                    </select>
+                    <label for="questionText">Pergunta:</label>
+                    <textarea id="questionText" required></textarea>
+                    <div class="form-group">
+                        <label for="questionImage">Imagem da Pergunta (opcional):</label>
+                        <input type="file" id="questionImage" accept="image/png, image/jpeg">
+                        <div id="imagePreview" class="image-preview"></div>
+                      </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="questionSubarea">Subárea:</label>
-                    <select id="questionSubarea" required>
-                        <option value="geralMec">Geral Mecânica</option>
-                        <option value="geralElet">Geral Eletrônica</option>
-                        <option value="BCM">BCM</option>
-                        <option value="PH">PH</option>
-                        <option value="ADULT">ADULT</option>
-                        <option value="ABS">ABS</option>
-                        <option value="WIPES">WIPES</option>
-                        <option value="ENC">ENC</option>
-                    </select>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="questionArea">Área:</label>
+                        <select id="questionArea" required>
+                            <option value="mecanico">Mecânico</option>
+                            <option value="eletronico">Eletrônico</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="questionSubarea">Subárea:</label>
+                        <select id="questionSubarea" required>
+                            <option value="geralMec">Geral Mecânica</option>
+                            <option value="geralElet">Geral Eletrônica</option>
+                            <option value="BCM">BCM</option>
+                            <option value="PH">PH</option>
+                            <option value="ADULT">ADULT</option>
+                            <option value="ABS">ABS</option>
+                            <option value="WIPES">WIPES</option>
+                            <option value="ENC">ENC</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="options-container">
-                <div class="option">
-                    <input type="text" id="optionA" placeholder="Opção A" required>
-                    <label class="correct-label">
-                        <input type="radio" name="correctOption" value="0" required>
-                        Correta
-                    </label>
+                <div class="options-container">
+                    <div class="option">
+                        <input type="text" id="optionA" placeholder="Opção A" required>
+                        <label class="correct-label">
+                            <input type="radio" name="correctOption" value="0" required>
+                            Correta
+                        </label>
+                    </div>
+                    <div class="option">
+                        <input type="text" id="optionB" placeholder="Opção B" required>
+                        <label class="correct-label">
+                            <input type="radio" name="correctOption" value="1">
+                            Correta
+                        </label>
+                    </div>
+                    <div class="option">
+                        <input type="text" id="optionC" placeholder="Opção C" required>
+                        <label class="correct-label">
+                            <input type="radio" name="correctOption" value="2">
+                            Correta
+                        </label>
+                    </div>
+                    <div class="option">
+                        <input type="text" id="optionD" placeholder="Opção D" required>
+                        <label class="correct-label">
+                            <input type="radio" name="correctOption" value="3">
+                            Correta
+                        </label>
+                    </div>
                 </div>
-                <div class="option">
-                    <input type="text" id="optionB" placeholder="Opção B" required>
-                    <label class="correct-label">
-                        <input type="radio" name="correctOption" value="1">
-                        Correta
-                    </label>
-                </div>
-                <div class="option">
-                    <input type="text" id="optionC" placeholder="Opção C" required>
-                    <label class="correct-label">
-                        <input type="radio" name="correctOption" value="2">
-                        Correta
-                    </label>
-                </div>
-                <div class="option">
-                    <input type="text" id="optionD" placeholder="Opção D" required>
-                    <label class="correct-label">
-                        <input type="radio" name="correctOption" value="3">
-                        Correta
-                    </label>
-                </div>
-            </div>
 
-            <button type="submit" class="btn-save">Salvar Pergunta</button>
-        </form>
-    </section>
+                <button type="submit" class="btn-save">Salvar Pergunta</button>
+            </form>
+        </section>
 
-    <script type="module">
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/admin.js"></script>
+    <script type="module" src="js/reports.js"></script>
+        <script type="module">
         import { logout } from './js/auth.js';
         window.logout = logout;
       </script>
